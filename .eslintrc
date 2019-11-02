@@ -6,7 +6,7 @@
     "prettier/react",
     "prettier/standard",
     "plugin:jest/recommended",
-    "plugin:promise/recommended",
+    "plugin:promise/recommended"
   ],
   "plugins": [
     "prettier",
