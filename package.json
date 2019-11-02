@@ -1,9 +1,9 @@
 {
-  "name": "node-template",
-  "version": "1.1.0",
-  "description": "Starter template for Node projects, with common configurations",
+  "name": "horserace",
+  "version": "0.0.9",
+  "description": "Benchmarking library",
   "main": "index.js",
-  "repository": "https://github.com/rkrayovskyy/node-template.git",
+  "repository": "https://github.com/rkrayovskyy/horserace.git",
   "author": "Roman Krayovskyy",
   "license": "MIT",
   "private": false,
