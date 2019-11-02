@@ -1,0 +1,68 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "standard",
+    "standard-jsx",
+    "prettier",
+    "prettier/react",
+    "prettier/standard",
+    "plugin:jest/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:promise/recommended",
+  ],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "prettier",
+    "standard",
+    "jsx-a11y",
+    "promise",
+    "jest",
+    "jsdoc"
+  ],
+  "overrides": [
+    {
+      "files": [ "**/*.spec.js" ],
+      "rules": {
+        "import/first": "off"
+      }
+    }
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "standard/no-callback-literal": "off",
+    "no-unexpected-multiline": "off",
+    "no-return-await": "off",
+    "node/no-deprecated-api": "off",
+    "jsdoc/check-param-names": 0,
+    "jsdoc/check-tag-names": 1,
+    "jsdoc/check-types": 0,
+    "jsdoc/newline-after-description": 1,
+    "jsdoc/no-undefined-types": 0,
+    "jsdoc/require-description-complete-sentence": 1,
+    "jsdoc/require-example": 0,
+    "jsdoc/require-hyphen-before-param-description": 1,
+    "jsdoc/require-param": 1,
+    "jsdoc/require-param-description": 1,
+    "jsdoc/require-param-name": 1,
+    "jsdoc/require-param-type": 1,
+    "jsdoc/require-returns-description": 1,
+    "jsdoc/require-returns-type": 1,
+    "jsdoc/valid-types": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "warn",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error"
+  },
+  "env":{
+    "jest": true,
+    "jest/globals": true,
+    "browser": true
+  },
+  "globals": {
+    "fetch": false
+  }
+}
