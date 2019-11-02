@@ -8,6 +8,7 @@
   "author": "Roman Krayovskyy",
   "license": "MIT",
   "private": false,
+  "files": ["index.js"],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@rkrayovskyy"
   },
