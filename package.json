@@ -2,6 +2,7 @@
   "name": "horserace",
   "version": "0.0.9",
   "description": "Benchmarking library",
+  "keywords": ["benchmark", "performance", "testing"],
   "main": "index.js",
   "repository": "https://github.com/rkrayovskyy/horserace.git",
   "author": "Roman Krayovskyy",
