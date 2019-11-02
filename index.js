@@ -1,34 +1,50 @@
 'use strict'
 
+/** Class representing a Horserace. */
 module.exports = class Horserace {
+  /**
+   * Create a Horserace.
+   */
   constructor() {
     this._runs = 1000
     this._fns = []
     this._params = []
   }
 
+  /**
+   * Set number of runs.
+   *
+   * @param {number} runs - Amount of runs, functions must be executed for benchmark.
+   */
   setRuns(runs) {
     this._runs = runs
     return this
   }
 
-  addFn(fns) {
-    this._fns.push(fns)
+  /**
+   * Add function for benchmarking.
+   *
+   * @param {number} fn - Function to benchmark.
+   */
+  addFn(fn) {
+    this._fns.push(fn)
     return this
   }
 
-  addParams() {
+  /**
+   * Set parameters for functions for benchmarking.
+   *
+   * @param {Array} arguments - Arguments to be parsed into params.
+   */
+  setParams() {
     this._params = Array.from(arguments)
     return this
   }
 
+  /** Run the benchmark race. */
   race() {
     const benchmark = {}
     const fnNamesLength = []
-    let report = `--= Horserace results =--\n\n`
-    report += `# of runs: ${this._runs}\n`
-    report += `Parameters: ${JSON.stringify(this._params)}\n\n`
-
     for (const fn of this._fns) {
       fnNamesLength.push(fn.name.length)
       const start = new Date()
@@ -39,19 +55,30 @@ module.exports = class Horserace {
       benchmark[fn.name] = end - start
     }
 
+    // prepare report table, with fixed width of columns to fit the longest function name
     const padding = Math.max(...fnNamesLength) + 7
     const fnTitle = 'Function'.padEnd(padding + 2)
     const timeTitle = 'Run time [↓]'
     const totalTitleLength = fnTitle.length + timeTitle.length
-    report += `${fnTitle}${timeTitle}\n`
-    report += `${'='.repeat(totalTitleLength)}\n`
+    let report = [
+      `--= Horserace results =--\n\n`,
+      `# of runs: ${this._runs}\n`,
+      `Parameters: ${JSON.stringify(this._params)}\n\n`,
+      `${fnTitle}${timeTitle}\n`,
+      `${'='.repeat(totalTitleLength)}\n`,
+    ].join('')
+
+    // add benchmark results to the report, sorted in desc order and prepended with trophy for the first place
     Object.entries(benchmark)
       .sort((a, b) => a[1] - b[1])
       .forEach(([name, time], index) => {
         const trophy = index === 0 ? '🏆 ' : '  '
-        report += `${trophy}${`${name}()`.padEnd(padding)}${time} ms\n`
-        report += `${'-'.repeat(totalTitleLength)}\n`
+        report += [
+          `${trophy}${`${name}()`.padEnd(padding)}${time} ms\n`,
+          `${'-'.repeat(totalTitleLength)}\n`,
+        ].join('')
       })
+
     console.log(report)
   }
 }
