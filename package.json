@@ -8,9 +8,13 @@
   "author": "Roman Krayovskyy",
   "license": "MIT",
   "private": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@rkrayovskyy"
+  },
   "scripts": {
     "start": "node index",
-    "test": "jest"
+    "test": "jest",
+    "postpublish": "npm publish --ignore-scripts --registry='https://registry.npmjs.org'"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
