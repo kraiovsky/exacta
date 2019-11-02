@@ -1,14 +1,20 @@
 {
   "name": "horserace",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "Benchmarking library",
-  "keywords": ["benchmark", "performance", "testing"],
+  "keywords": [
+    "benchmark",
+    "performance",
+    "testing"
+  ],
   "main": "index.js",
   "repository": "https://github.com/rkrayovskyy/horserace.git",
   "author": "Roman Krayovskyy",
   "license": "MIT",
   "private": false,
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@rkrayovskyy"
   },
