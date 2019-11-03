@@ -1,6 +1,6 @@
 {
   "name": "exacta",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Benchmarking library",
   "keywords": [
     "benchmark",
@@ -21,7 +21,7 @@
   "scripts": {
     "start": "node index",
     "test": "jest",
-    "postpublish": "npm publish --ignore-scripts --registry='https://registry.npmjs.org'"
+    "postpublish": "npm publish --ignore-scripts --@rkrayovskyy:registry='https://registry.npmjs.org'"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
