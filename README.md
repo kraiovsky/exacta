@@ -8,9 +8,9 @@ Benchmarking library.
 
 ## Install
 ```
-npm i exacta
+npm i exacta --save-dev
 or
-yarn add exacta
+yarn add exacta --dev
 ```
 
 ## Use
