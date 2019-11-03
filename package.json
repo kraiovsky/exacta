@@ -15,13 +15,9 @@
   "files": [
     "index.js"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@rkrayovskyy"
-  },
   "scripts": {
     "start": "node index",
-    "test": "jest",
-    "postpublish": "npm publish --ignore-scripts --@rkrayovskyy:registry='https://registry.npmjs.org'"
+    "test": "jest"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
