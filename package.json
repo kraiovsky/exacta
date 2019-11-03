@@ -1,5 +1,5 @@
 {
-  "name": "horserace",
+  "name": "exacta",
   "version": "1.0.0",
   "description": "Benchmarking library",
   "keywords": [
@@ -8,7 +8,7 @@
     "testing"
   ],
   "main": "index.js",
-  "repository": "https://github.com/rkrayovskyy/horserace.git",
+  "repository": "https://github.com/rkrayovskyy/exacta.git",
   "author": "Roman Krayovskyy",
   "license": "MIT",
   "private": false,

@@ -1,7 +1,7 @@
 'use strict'
 
-/** Class representing a Horserace. */
-module.exports = class Horserace {
+/** Class representing a Race. */
+module.exports = class Race {
   /**
    * Create a Horserace.
    */
@@ -42,7 +42,7 @@ module.exports = class Horserace {
   }
 
   /** Run the benchmark race. */
-  race() {
+  run() {
     const benchmark = {}
     const fnNamesLength = []
     for (const fn of this._fns) {
@@ -61,7 +61,7 @@ module.exports = class Horserace {
     const timeTitle = 'Run time [↓]'
     const totalTitleLength = fnTitle.length + timeTitle.length
     let report = [
-      `--= Horserace results =--\n\n`,
+      `--= Race results =--\n\n`,
       `# of runs: ${this._runs}\n`,
       `Parameters: ${JSON.stringify(this._params)}\n\n`,
       `${fnTitle}${timeTitle}\n`,
