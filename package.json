@@ -8,8 +8,9 @@
     "testing"
   ],
   "main": "index.js",
-  "repository": "https://github.com/rkrayovskyy/exacta.git",
-  "author": "Roman Krayovskyy",
+  "repository": "https://github.com/kraiovsky/exacta.git",
+  "author": "Roman Kraiovsky",
+  "homepage": "https://kraiovsky.now.sh/",
   "license": "MIT",
   "private": false,
   "files": [
