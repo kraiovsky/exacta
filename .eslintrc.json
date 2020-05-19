@@ -1,0 +1,49 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "standard",
+    "plugin:jest/recommended",
+    "plugin:promise/recommended",
+    "plugin:jsdoc/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:prettier/recommended",
+    "prettier/standard",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier",
+    "standard",
+    "promise",
+    "jest",
+    "jsdoc"
+  ],
+  "overrides": [
+    // {
+    //   "files": [ "**/*.spec.js" ],
+    //   "rules": {
+    //     "import/first": "off"
+    //   }
+    // }
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "import/first": "off",
+    "jsdoc/require-jsdoc": "off",
+    "jsdoc/require-returns": "off"
+  },
+  "env":{
+    "jest": true,
+    "jest/globals": true,
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "fetch": false
+  }
+}

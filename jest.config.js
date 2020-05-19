@@ -19,7 +19,11 @@ module.exports = {
     '/.vscode/',
     '/.serverless/',
   ],
-  testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)', '!**/*.cases.{js,jsx}'],
+  testMatch: [
+    '**/__tests__/**/*.js?(x)',
+    '**/?(*.)+(spec|test).js?(x)',
+    '!**/*.cases.{js,jsx}',
+  ],
   globals: {},
   collectCoverage: false,
   collectCoverageFrom: [

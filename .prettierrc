@@ -1,7 +1,6 @@
 {
-  "printWidth": 100,
-  "parser": "babel",
+  "trailingComma": "all",
+  "tabWidth": 2,
   "semi": false,
-  "singleQuote": true,
-  "trailingComma": "es5"
+  "singleQuote": true
 }

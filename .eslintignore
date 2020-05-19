@@ -1,2 +1,1 @@
-build/*.js
-**/__fixtures__/*.js
+node_modules
