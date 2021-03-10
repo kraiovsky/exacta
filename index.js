@@ -45,14 +45,33 @@ module.exports = class Race {
   run() {
     const benchmark = {}
     const fnNamesLength = []
-    for (const fn of this._fns) {
-      fnNamesLength.push(fn.name.length)
+    const fnNamesSet = new Set(this._fns.map(f => f.name));
+    const duplicateCount = {};
+    const fnNames = this._fns.map(f => {
+      const n = f.name;
+      if (fnNamesSet.has(n)) {
+        // name is duplicate
+        let version = duplicateCount[n] || 1;
+        for (; version < 10000; version++) {
+          const newName = n + '_' + version;
+          if (!fnNamesSet.has(newName)) {
+            duplicateCount[n] = version + 1;
+            return newName;
+          }
+        }
+      }
+      return n;
+    });
+    for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
+      const fn = this._fns[fnIdx];
+      const name = fnNames[fnIdx];
+      fnNamesLength.push(name.length)
       const start = new Date()
       for (let i = 0; i < this._runs; i++) {
         fn(...this._params)
       }
       const end = new Date()
-      benchmark[fn.name] = end - start
+      benchmark[name] = end - start
     }
 
     // prepare report table, with fixed width of columns to fit the longest function name
