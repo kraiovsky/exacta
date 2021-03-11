@@ -67,46 +67,49 @@ module.exports = class Race {
   run() {
     const benchmark = {}
     const fnNamesLength = []
-    const fnNamesSet = new Set(this._fns.map(f => f.name));
-    const duplicateCount = {};
-    const fnNames = this._fns.map(f => {
-      const n = f.name;
+    const fnNamesSet = new Set(this._fns.map((f) => f.name))
+    const duplicateCount = {}
+    const fnNames = this._fns.map((f) => {
+      const n = f.name
       if (fnNamesSet.has(n)) {
         // name is duplicate
-        let version = duplicateCount[n] || 1;
+        let version = duplicateCount[n] || 1
         for (; version < 10000; version++) {
-          const newName = n + '_' + version;
+          const newName = n + '_' + version
           if (!fnNamesSet.has(newName)) {
-            duplicateCount[n] = version + 1;
-            return newName;
+            duplicateCount[n] = version + 1
+            return newName
           }
         }
       }
-      return n;
-    });
-    const average = arr => arr.reduce((sum, val) => sum + val, 0) / arr.length;
-    const standardDeviation = arr => {
-      const avg = average(arr);
-      return Math.sqrt(average(arr.map(val => {
-        const dif = val - avg;
-        return dif * dif;
-      })));
-    };
-    const warmupDone = new Set();
-    const results = {};
+      return n
+    })
+    const average = (arr) => arr.reduce((sum, val) => sum + val, 0) / arr.length
+    const standardDeviation = (arr) => {
+      const avg = average(arr)
+      return Math.sqrt(
+        average(
+          arr.map((val) => {
+            const dif = val - avg
+            return dif * dif
+          }),
+        ),
+      )
+    }
+    const warmupDone = new Set()
+    const results = {}
     for (let sample = 0; sample < this._samples; sample++) {
       for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
-        const fn = this._fns[fnIdx];
-        const name = fnNames[fnIdx];
-        if (sample == 0) results[name] = [];
+        const fn = this._fns[fnIdx]
+        const name = fnNames[fnIdx]
+        if (sample === 0) results[name] = []
         fnNamesLength.push(name.length)
         if (!warmupDone.has(fn)) {
-          const t2 = Date.now() + this._warmup;
-          //console.log(`warmup: run ${name} for ${this._warmup} ms`)
+          const t2 = Date.now() + this._warmup
           while (Date.now() < t2) {
             fn(...this._params)
           }
-          warmupDone.add(fn);
+          warmupDone.add(fn)
         }
 
         const start = new Date()
@@ -121,14 +124,14 @@ module.exports = class Race {
     }
 
     for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
-      const name = fnNames[fnIdx];
+      const name = fnNames[fnIdx]
       benchmark[name] = {
         results: results[name],
         avg: average(results[name]),
         dev: standardDeviation(results[name]),
         min: Math.min(...results[name]),
         max: Math.max(...results[name]),
-      };
+      }
     }
 
     // prepare report table, with fixed width of columns to fit the longest function name
@@ -139,7 +142,6 @@ module.exports = class Race {
     let report = [
       `--= Race results =--\n\n`,
       `# of runs: ${this._runs}\n`,
-      //`Parameters: ${JSON.stringify(this._params)}\n\n`,
       `${fnTitle}${timeTitle}\n`,
       `${'='.repeat(totalTitleLength)}\n`,
     ].join('')
@@ -149,7 +151,11 @@ module.exports = class Race {
       .sort((a, b) => a[1].min - b[1].min)
       .forEach(([name, { avg, min, max, dev, results }], index) => {
         report += [
-          `${`${name}`.padEnd(padding)}${min} ms (avg ${avg}) (max ${max}) (dev ${dev.toFixed(1)}) (raw ${results.join(' ')})\n`,
+          `${`${name}`.padEnd(
+            padding,
+          )}${min} ms (avg ${avg}) (max ${max}) (dev ${dev.toFixed(
+            1,
+          )}) (raw ${results.join(' ')})\n`,
           `${'-'.repeat(totalTitleLength)}\n`,
         ].join('')
       })
