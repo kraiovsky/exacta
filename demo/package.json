@@ -1,0 +1,25 @@
+{
+  "name": "exacta-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-inline.js",
+    "dev": "rollup -c -w",
+    "start": "sirv public"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "*",
+    "@rollup/plugin-node-resolve": "*",
+    "app-root-path": "*",
+    "find-free-port-sync": "*",
+    "inliner": "*",
+    "npm-run": "*",
+    "rollup": "*",
+    "rollup-plugin-css-only": "*",
+    "rollup-plugin-livereload": "*",
+    "rollup-plugin-svelte": "*",
+    "rollup-plugin-terser": "*",
+    "sirv-cli": "*",
+    "svelte": "*"
+  }
+}
