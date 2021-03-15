@@ -7,8 +7,20 @@ module.exports = class Race {
    */
   constructor() {
     this._runs = 1000
+    this._warmup = 100
+    this._samples = 10
     this._fns = []
     this._params = []
+    this.console = console
+  }
+
+  /**
+   * set custom console.
+   * console must implement `console.log(string)`
+   */
+  setConsole(customConsole) {
+    this.console = customConsole
+    return this
   }
 
   /**
@@ -18,6 +30,26 @@ module.exports = class Race {
    */
   setRuns(runs) {
     this._runs = runs
+    return this
+  }
+
+  /**
+   * Set number of samples.
+   *
+   * @param {number} samples - How often to repeat the benchmark runs.
+   */
+  setSamples(samples) {
+    this._samples = samples
+    return this
+  }
+
+  /**
+   * Set number of warmup runs.
+   *
+   * @param {number} millisec - Run every function for `millisec` milliseconds before benchmark.
+   */
+  setWarmup(millisec) {
+    this._warmup = millisec
     return this
   }
 
@@ -42,43 +74,119 @@ module.exports = class Race {
   }
 
   /** Run the benchmark race. */
-  run() {
+  async run() {
+    function get_time() {
+      return new Date(); // TODO use high-resolution timer
+    }
     const benchmark = {}
     const fnNamesLength = []
-    for (const fn of this._fns) {
-      fnNamesLength.push(fn.name.length)
-      const start = new Date()
-      for (let i = 0; i < this._runs; i++) {
-        fn(...this._params)
+    const fnNamesSet = new Set(this._fns.map(f => f.name));
+    const duplicateCount = {};
+    const fnNames = this._fns.map(f => {
+      const n = f.name;
+      if (fnNamesSet.has(n)) {
+        // name is duplicate
+        let version = duplicateCount[n] || 1;
+        for (; version < 10000; version++) {
+          const newName = n + '_' + version;
+          if (!fnNamesSet.has(newName)) {
+            duplicateCount[n] = version + 1;
+            return newName;
+          }
+        }
       }
-      const end = new Date()
-      benchmark[fn.name] = end - start
+      return n;
+    });
+    const average = arr => arr.reduce((sum, val) => sum + val, 0) / arr.length;
+    const standardDeviation = arr => {
+      const avg = average(arr);
+      return Math.sqrt(average(arr.map(val => {
+        const dif = val - avg;
+        return dif * dif;
+      })));
+    };
+    const warmupDone = new Set();
+    const results = {};
+    const sampleWidth = `${this._samples}`.length;
+    const fname = '123456789abcdefghijklmnopqrstuvwxyz'; // max 35 fns
+    for (let sample = 0; sample < this._samples; sample++) {
+      const linetimes = [];
+      for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
+        const fn = this._fns[fnIdx];
+        const name = fnNames[fnIdx];
+        if (sample == 0) results[name] = [];
+        fnNamesLength.push(name.length)
+        if (!warmupDone.has(fn)) {
+          const t2 = Date.now() + this._warmup;
+          this.console.log(`warmup: run ${name} for ${this._warmup} ms`)
+          while (Date.now() < t2) {
+            await fn(...this._params)
+          }
+          warmupDone.add(fn);
+        }
+
+        const start = get_time()
+        for (let i = 0; i < this._runs; i++) {
+          await fn(...this._params)
+        }
+        const end = get_time()
+
+        const diff = end - start
+        //const diff = 100 // test: where is x = zero
+
+        results[name].push(diff)
+        linetimes.push(diff);
+      }
+
+      // show time proportions
+      const timesum = linetimes.reduce((a, v) => (a + v), 0);
+      const termwidth = 80;
+      const t_to_width = 1 / timesum * (termwidth-2) * this._fns.length;
+      const widths = linetimes.map(t => (termwidth - 2 - (t * t_to_width - 0.5 * (termwidth-2))));
+      const space = '                                                                                                                        '; // 120 * ' '
+      const linestr = widths.map((w,i) => {
+        return space.slice(0, w) + fname[i];
+      }).join('\n');
+      // here we need await to run this in a browser and see the live output
+      await this.console.log(linestr +
+        '\nslow <-------------------------------- o --------------------------------> fast')
+    }
+
+    for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
+      const name = fnNames[fnIdx];
+      benchmark[name] = {
+        results: results[name],
+        avg: average(results[name]),
+        dev: standardDeviation(results[name]),
+        min: Math.min(...results[name]),
+        max: Math.max(...results[name]),
+        fnIdx,
+      };
     }
 
     // prepare report table, with fixed width of columns to fit the longest function name
     const padding = Math.max(...fnNamesLength) + 7
     const fnTitle = 'Function'.padEnd(padding + 2)
-    const timeTitle = 'Run time [↓]'
+    const timeTitle = 'Minimum Time'
     const totalTitleLength = fnTitle.length + timeTitle.length
     let report = [
-      `--= Race results =--\n\n`,
+      `\n--= Race results =--\n\n`,
       `# of runs: ${this._runs}\n`,
-      `Parameters: ${JSON.stringify(this._params)}\n\n`,
+      //`Parameters: ${JSON.stringify(this._params)}\n\n`,
       `${fnTitle}${timeTitle}\n`,
       `${'='.repeat(totalTitleLength)}\n`,
     ].join('')
 
     // add benchmark results to the report, sorted in desc order and prepended with trophy for the first place
     Object.entries(benchmark)
-      .sort((a, b) => a[1] - b[1])
-      .forEach(([name, time], index) => {
-        const trophy = index === 0 ? '🏆 ' : '  '
+      .sort((a, b) => a[1].min - b[1].min)
+      .forEach(([name, { avg, min, max, dev, results, fnIdx }], resIdx) => {
         report += [
-          `${trophy}${`${name}()`.padEnd(padding)}${time} ms\n`,
+          `${fname[fnIdx]}. ${`${name}`.padEnd(padding)}${min} ms (avg ${avg}) (max ${max}) (dev ${dev.toFixed(1)})\n`,
           `${'-'.repeat(totalTitleLength)}\n`,
         ].join('')
       })
 
-    console.log(report)
+    this.console.log(report)
   }
 }
