@@ -11,6 +11,16 @@ module.exports = class Race {
     this._samples = 10
     this._fns = []
     this._params = []
+    this.console = console
+  }
+
+  /**
+   * set custom console.
+   * console must implement `console.log(string)`
+   */
+  setConsole(customConsole) {
+    this.console = customConsole
+    return this
   }
 
   /**
@@ -64,7 +74,10 @@ module.exports = class Race {
   }
 
   /** Run the benchmark race. */
-  run() {
+  async run() {
+    function get_time() {
+      return new Date(); // TODO use high-resolution timer
+    }
     const benchmark = {}
     const fnNamesLength = []
     const fnNamesSet = new Set(this._fns.map(f => f.name));
@@ -94,7 +107,10 @@ module.exports = class Race {
     };
     const warmupDone = new Set();
     const results = {};
+    const sampleWidth = `${this._samples}`.length;
+    const fname = '123456789abcdefghijklmnopqrstuvwxyz'; // max 35 fns
     for (let sample = 0; sample < this._samples; sample++) {
+      const linetimes = [];
       for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
         const fn = this._fns[fnIdx];
         const name = fnNames[fnIdx];
@@ -102,22 +118,38 @@ module.exports = class Race {
         fnNamesLength.push(name.length)
         if (!warmupDone.has(fn)) {
           const t2 = Date.now() + this._warmup;
-          //console.log(`warmup: run ${name} for ${this._warmup} ms`)
+          this.console.log(`warmup: run ${name} for ${this._warmup} ms`)
           while (Date.now() < t2) {
-            fn(...this._params)
+            await fn(...this._params)
           }
           warmupDone.add(fn);
         }
 
-        const start = new Date()
+        const start = get_time()
         for (let i = 0; i < this._runs; i++) {
-          fn(...this._params)
+          await fn(...this._params)
         }
-        const end = new Date()
+        const end = get_time()
 
         const diff = end - start
+        //const diff = 100 // test: where is x = zero
+
         results[name].push(diff)
+        linetimes.push(diff);
       }
+
+      // show time proportions
+      const timesum = linetimes.reduce((a, v) => (a + v), 0);
+      const termwidth = 80;
+      const t_to_width = 1 / timesum * (termwidth-2) * this._fns.length;
+      const widths = linetimes.map(t => (termwidth - 2 - (t * t_to_width - 0.5 * (termwidth-2))));
+      const space = '                                                                                                                        '; // 120 * ' '
+      const linestr = widths.map((w,i) => {
+        return space.slice(0, w) + fname[i];
+      }).join('\n');
+      // here we need await to run this in a browser and see the live output
+      await this.console.log(linestr +
+        '\nslow <-------------------------------- o --------------------------------> fast')
     }
 
     for (let fnIdx = 0; fnIdx < this._fns.length; fnIdx++) {
@@ -128,6 +160,7 @@ module.exports = class Race {
         dev: standardDeviation(results[name]),
         min: Math.min(...results[name]),
         max: Math.max(...results[name]),
+        fnIdx,
       };
     }
 
@@ -137,7 +170,7 @@ module.exports = class Race {
     const timeTitle = 'Minimum Time'
     const totalTitleLength = fnTitle.length + timeTitle.length
     let report = [
-      `--= Race results =--\n\n`,
+      `\n--= Race results =--\n\n`,
       `# of runs: ${this._runs}\n`,
       //`Parameters: ${JSON.stringify(this._params)}\n\n`,
       `${fnTitle}${timeTitle}\n`,
@@ -147,13 +180,13 @@ module.exports = class Race {
     // add benchmark results to the report, sorted in desc order and prepended with trophy for the first place
     Object.entries(benchmark)
       .sort((a, b) => a[1].min - b[1].min)
-      .forEach(([name, { avg, min, max, dev, results }], index) => {
+      .forEach(([name, { avg, min, max, dev, results, fnIdx }], resIdx) => {
         report += [
-          `${`${name}`.padEnd(padding)}${min} ms (avg ${avg}) (max ${max}) (dev ${dev.toFixed(1)}) (raw ${results.join(' ')})\n`,
+          `${fname[fnIdx]}. ${`${name}`.padEnd(padding)}${min} ms (avg ${avg}) (max ${max}) (dev ${dev.toFixed(1)})\n`,
           `${'-'.repeat(totalTitleLength)}\n`,
         ].join('')
       })
 
-    console.log(report)
+    this.console.log(report)
   }
 }
